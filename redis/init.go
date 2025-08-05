@@ -1,4 +1,4 @@
-// @Author:冯铁城 [17615007230@163.com] 2025-08-05 15:08:55
+// Package redis @Author:冯铁城 [17615007230@163.com] 2025-08-05 15:08:55
 package redis
 
 import (
