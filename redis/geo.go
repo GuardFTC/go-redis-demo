@@ -55,11 +55,13 @@ func (g *geoClient) GeoBatchAdd(key string, locations ...*redis.GeoLocation) (in
 //   - 两个位置之间的距离
 //   - 错误信息
 func (g *geoClient) GeoDist(key, member1, member2, unit string) (float64, error) {
-	// 验证单位是否有效
+
+	//1.验证单位是否有效
 	if unit != "m" && unit != "km" && unit != "mi" && unit != "ft" {
 		return 0, errors.New("无效的距离单位，必须是m、km、mi或ft之一")
 	}
 
+	//2.返回两个给定位置之间的距离
 	return rdb.GeoDist(ctx, key, member1, member2, unit).Result()
 }
 
@@ -103,11 +105,13 @@ func (g *geoClient) GeoPos(key string, members ...string) ([]*redis.GeoPos, erro
 //   - 位置信息列表
 //   - 错误信息
 func (g *geoClient) GeoRadius(key string, longitude, latitude float64, radius float64, unit string, withCoord, withDist, withHash bool, count int) ([]redis.GeoLocation, error) {
-	// 验证单位是否有效
+
+	//1.验证单位是否有效
 	if unit != "m" && unit != "km" && unit != "mi" && unit != "ft" {
 		return nil, errors.New("无效的距离单位，必须是m、km、mi或ft之一")
 	}
 
+	//2.以给定的经纬度为中心，返回键包含的位置元素当中，与中心的距离不超过给定最大距离的所有位置元素
 	return rdb.GeoRadius(ctx, key, longitude, latitude, &redis.GeoRadiusQuery{
 		Radius:      radius,
 		Unit:        unit,
@@ -133,11 +137,13 @@ func (g *geoClient) GeoRadius(key string, longitude, latitude float64, radius fl
 //   - 位置信息列表
 //   - 错误信息
 func (g *geoClient) GeoRadiusByMember(key, member string, radius float64, unit string, withCoord, withDist, withHash bool, count int) ([]redis.GeoLocation, error) {
-	// 验证单位是否有效
+
+	//1.验证单位是否有效
 	if unit != "m" && unit != "km" && unit != "mi" && unit != "ft" {
 		return nil, errors.New("无效的距离单位，必须是m、km、mi或ft之一")
 	}
 
+	//2.以给定的位置元素为中心，返回键包含的位置元素当中，与中心的距离不超过给定最大距离的所有位置元素
 	return rdb.GeoRadiusByMember(ctx, key, member, &redis.GeoRadiusQuery{
 		Radius:      radius,
 		Unit:        unit,
