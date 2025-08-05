@@ -44,46 +44,6 @@ func (g *geoClient) GeoBatchAdd(key string, locations ...*redis.GeoLocation) (in
 	return rdb.GeoAdd(ctx, key, locations...).Result()
 }
 
-// GeoAddWithOptions 将指定的地理空间位置添加到指定的key中，支持额外选项
-// 参数:
-//   - key: 键名
-//   - longitude: 经度
-//   - latitude: 纬度
-//   - member: 位置名称
-//   - nx: 当为true时，只添加不存在的位置
-//   - xx: 当为true时，只更新已存在的位置
-//   - ch: 当为true时，返回变更的位置数量而不是新添加的位置数量
-//
-// 返回:
-//   - 新添加或变更的位置数量
-//   - 错误信息
-func (g *geoClient) GeoAddWithOptions(key string, longitude, latitude float64, member string, nx, xx, ch bool) (int64, error) {
-	// 检查nx和xx不能同时为true
-	if nx && xx {
-		return 0, errors.New("NX和XX选项不能同时使用")
-	}
-
-	// 构建命令参数
-	args := []interface{}{key}
-
-	// 添加选项
-	if nx {
-		args = append(args, "NX")
-	}
-	if xx {
-		args = append(args, "XX")
-	}
-	if ch {
-		args = append(args, "CH")
-	}
-
-	// 添加经纬度和成员名称
-	args = append(args, longitude, latitude, member)
-
-	// 执行GEOADD命令
-	return rdb.Do(ctx, "GEOADD", args).Int64()
-}
-
 // GeoDist 返回两个给定位置之间的距离
 // 参数:
 //   - key: 键名
