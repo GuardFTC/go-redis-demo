@@ -2,8 +2,9 @@
 package redis
 
 import (
-	"github.com/redis/go-redis/v9"
 	"testing"
+
+	"github.com/redis/go-redis/v9"
 )
 
 func Test_geoClient(t *testing.T) {

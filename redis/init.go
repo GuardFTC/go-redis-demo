@@ -2,31 +2,32 @@
 package redis
 
 import (
-	"context"
-	"github.com/redis/go-redis/v9"
 	"log"
 )
 
-// rdb redis客户端
-var rdb *redis.Client
+// Client redis客户端
+var Client *client
 
-// ctx 空白上下文
-var ctx = context.Background()
-
-// InitRedis 初始化redis
-func InitRedis() {
+// InitClient 初始化redis客户端
+func InitClient(config *Config) {
 
 	//1.初始化Redis客户端
-	rdb = redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "",
-		DB:       0,
-	})
-
-	//2.测试链接是否建立成功
-	if err := rdb.Ping(ctx).Err(); err != nil {
+	c, err := newClient(config)
+	if err != nil {
 		log.Fatalf("redis connection error: %v", err)
 	} else {
-		log.Printf("redis connection success")
+		log.Println("redis connection success")
+	}
+
+	//2.全局客户端赋值
+	Client = c
+}
+
+// CloseClient 关闭redis客户端
+func CloseClient() {
+	if err := Client.Close(); err != nil {
+		log.Fatalf("redis connection closed error: %v", err)
+	} else {
+		log.Println("redis connection closed success")
 	}
 }

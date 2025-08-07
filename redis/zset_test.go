@@ -2,9 +2,10 @@
 package redis
 
 import (
-	"github.com/redis/go-redis/v9"
 	"strconv"
 	"testing"
+
+	"github.com/redis/go-redis/v9"
 )
 
 func Test_zSetClient(t *testing.T) {
