@@ -7,7 +7,10 @@ import (
 
 	"github.com/redis/go-redis/v9"
 
+	bitmappkg "go-redis-demo/redis/bitmap"
+	geopkg "go-redis-demo/redis/geo"
 	hashpkg "go-redis-demo/redis/hash"
+	hllpkg "go-redis-demo/redis/hll"
 	listpkg "go-redis-demo/redis/list"
 	setpkg "go-redis-demo/redis/set"
 	stringpkg "go-redis-demo/redis/string"
@@ -22,15 +25,15 @@ type client struct {
 	List   *listpkg.Client   // 列表操作客户端
 	Set    *setpkg.Client    // 集合操作客户端
 	ZSet   *zsetpkg.Client   // 有序集合操作客户端
-	// Geo    *GeoClient    // 地理位置操作客户端 (待实现)
-	// Bitmap *BitmapClient // 位图操作客户端 (待实现)
-	// HLL    *HLLClient    // HyperLogLog操作客户端 (待实现)
+	Geo    *geopkg.Client    // 地理位置操作客户端
+	Bitmap *bitmappkg.Client // 位图操作客户端
+	HLL    *hllpkg.Client    // HyperLogLog操作客户端
 }
 
 // NewClient 创建一个新的Redis客户端实例
 func newClient(config *Config) (*client, error) {
 
-	// 1.创建底层go-redis客户端
+	//1.创建底层go-redis客户端
 	rdb := redis.NewClient(&redis.Options{
 		Addr:         config.Addr,
 		Password:     config.Password,
@@ -43,26 +46,27 @@ func newClient(config *Config) (*client, error) {
 		MaxRetries:   config.MaxRetries,
 	})
 
-	// 2.测试连接
+	//2.测试连接
 	ctx := context.Background()
 	if err := rdb.Ping(ctx).Err(); err != nil {
 		return nil, err
 	}
 
-	// 3.创建统一客户端，组装各个数据类型的操作客户端
-	client := &client{
+	//3.创建统一客户端，组装各个数据类型的操作客户端
+	redisClient := &client{
 		rdb:    rdb,
 		String: stringpkg.New(rdb),
 		Hash:   hashpkg.New(rdb),
 		List:   listpkg.New(rdb),
 		Set:    setpkg.New(rdb),
 		ZSet:   zsetpkg.New(rdb),
-		// Geo:    newGeoClient(rdb),    // 待实现
-		// Bitmap: newBitmapClient(rdb), // 待实现
-		// HLL:    newHLLClient(rdb),    // 待实现
+		Geo:    geopkg.New(rdb),
+		Bitmap: bitmappkg.New(rdb),
+		HLL:    hllpkg.New(rdb),
 	}
 
-	return client, nil
+	//4.返回
+	return redisClient, nil
 }
 
 // Close 关闭Redis连接
